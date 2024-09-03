@@ -1,0 +1,226 @@
+<html>
+	<head>
+		<title>Reportes Encuestas Konexo</title>
+		<!--link rel='icon' href='assets/images/favicon.ico' type='image/x-icon'/-->
+		<!--link rel='shortcut icon' href='assets/images/favicon.ico' type='image/x-icon'/-->
+
+		<script src='/app-8445/assets/libs/jquery/3.5.1/jquery-3.5.1.min.js'></script>
+		<!--<script src='/app-8445/assets/libs/jquery/3.5.1/jquery-ui.min.js'></script>-->
+
+		<link rel='stylesheet' href='/app-8445/assets/libs/bootstrap/4.5.2/bootstrap.min.css'>
+		<script src='/app-8445/assets/libs/bootstrap/4.5.2/bootstrap.min.js'></script>
+
+		<script src='/app-8445/assets/libs/moments/2.22.1/moment-with-locales.min.js'></script>
+
+		<script src='/app-8445/assets/libs/daterangepicker/daterangepicker.min.js'></script>
+		<link rel='stylesheet' href='/app-8445/assets/libs/daterangepicker/daterangepicker.min.css'>
+
+		<script defer src='/app-8445/assets/libs/bootstrap-datepicker/1.9.0/bootstrap-datepicker.min.js'></script>
+
+		<script defer src='https://kit.fontawesome.com/6b338f1620.js'></script>
+
+		<!-- <script src='/app-8445/assets/libs/socket.io/socket.io.js'></script> -->
+
+		<link rel='stylesheet' href='https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css'>
+		<link rel='stylesheet' href='/app-8445/assets/libs/datatables/1.10.15/css/custom.css'>
+		<script src='/app-8445/assets/libs/datatables/1.10.15/js/jquery.dataTables.js'></script>
+		<script src='/app-8445/assets/libs/datatables/1.10.15/js/dataTables.bootstrap4.min.js'></script>
+
+		<link rel='stylesheet' href='/app-8445/assets/libs/sixbell/common.css'> 
+		<!-- <script src='/app-8445/assets/libs/sixbell/common.js'></script>-->
+		<script src='/app-8445/assets/libs/sixbell/reporteMarcas.js'></script>
+		<!--<script src='/app-8445/assets/libs/sixbell/vozTiempoReal.js'></script>
+		<script src='/app-8445/assets/libs/sixbell/chatHistorico.js'></script>
+		<script src='/app-8445/assets/libs/sixbell/chatTiempoReal.js'></script>
+		-->
+		<script>
+			var today           = moment();
+			var todayOneWeekAgo = moment().subtract(7, 'd');
+			var toastr_opts = {
+				closeButton      : true,
+				debug            : false,
+				newestOnTop      : true,
+				progressBar      : true,
+				positionClass    : 'toast-top-right',
+				preventDuplicates: false,
+				onclick          : null,
+				showDuration     : "100",
+				hideDuration     : "100",
+				timeOut          : "2500",
+				extendedTimeOut  : "1000",
+				showEasing       : "linear",
+				hideEasing       : "linear",
+				showMethod       : "FadeIn",
+				hideMethod       : "FadeOut"
+			};
+
+			var modal_opts = {
+				backdrop           : 'static',
+				keyboard           : false,
+				ignoreBackdropClick: true
+			};
+		</script>
+	</head>
+	<body>
+		<div id='overlay_page'>
+			<div class='spinner'>
+			</div>
+		</div>
+
+		<nav class='navbar fixed-top navbar-light' style='background-color: #0a507e;'>
+			<a class='navbar-brand' href='#'>
+			</a>			
+			<div style='color: white; text-align: left;'>
+				<h2 >Reportes Encuestas Konexo</h2>
+				<!--<small>Epas generadas</small>-->
+			</div>
+			<div style='color: white; text-align: right;'>
+				<button class='btn btn-warning' type='button' id='rep_epa_submit'>Reportes Encuestas</button>
+				<button class='btn btn-danger' type='button' id='rep_nps_submit'>Reportes NPS</button>
+				<input id="reporte" name="reporte" type="hidden" value="epa">
+				<!--<small>Epas generadas</small>-->
+			</div>
+		</nav>
+		<div style='margin-top: 123px; height: calc(100% - 123px);'>
+			<div style='margin-top: 130px; padding:40px; ' id='rep_marcas'>
+				<div class='row'>
+					<div class='col-4'>
+						<div id="nameReport"><h2>Reportes Encuestas</h2></div>
+					</div>
+					<div class='col-3'>
+						<select name="lineas" id="lineas" class="custom-select custom-select-sm form-control form-control-sm" aria-label="">
+						  <option selected>Seleccione una opción</option>
+						</select>
+					</div>
+					<div class='col-5'>
+						
+						<div id='range_selector_rep_marcas' class='daterange add-ranges inl'>
+							<div class='input-group mb-3'>
+								<div class='input-group-prepend' id='start_range_triggerMarcas'>
+									<span class='input-group-text'>
+										<i class='far fa-calendar-alt'></i>
+									</span>
+								</div>
+								<input type='text' class='form-control' id='start_range_label_rep_marcas' readonly>
+								<div class='input-group-append'>
+									<button class='btn btn-outline-success' type='button' id='rep_marcas_submit'>Generar Reporte</button>
+									<input type='hidden' id='start_date_rep_marcas'>
+									<input type='hidden' id='final_date_rep_marcas'>
+								</div>
+								<div class='input-group-append'>
+									<button class='btn btn-outline-success' type='button' id='reps'>Ver Reportes</button>
+									<input type='hidden' id='start_date_rep_marcas'>
+									<input type='hidden' id='final_date_rep_marcas'>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr>
+				<table id='rep_marcas_list' class='table table-condensed table-hover table-striped' style='width: 100%;'></table>
+			</div>
+
+
+			<div style='margin-top: 130px; padding:40px; ' >
+			</div>
+		</div>
+
+
+		<div class='modal fade' id='start_execution_modal' >
+			<div class='vertical-alignment-helper'>
+				<div class='vertical-align-center'>
+					<div class='modal-dialog modal-lg'>
+						<div class='modal-content'>
+							<div class='modal-no-header'>
+								<button type='button' class='close' data-dismiss='modal' ><!--onclick="location.reload()"-->
+									<i class='fas fa-times'></i>
+								</button>
+								<h4 class='modal-title'>Execuci&oacute;n de reporte</h4>
+							</div>
+							<div class='modal-body text-center'>
+								<br><br>
+								El reporte ha sido solicitado, cuando sea finalizado se mostrar&aacute; el di&aacute;logo de descarga,
+								si ya no se encuentra navegando en la aplicaci&oacute;n de reportes lo encontrar&aacute; en el listado
+								de reportes disponibles
+								<br><br>
+							</div>
+							<div class='modal-footer'>
+								<!-- <button type='button' class='btn btn-success' data-dismiss='modal' onclick="location.reload()">Cerrar</button> -->
+								<button type='button' class='btn btn-success' data-dismiss='modal'>Cerrar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='modal fade' id='download_error_modal'>
+			<div class='vertical-alignment-helper'>
+				<div class='vertical-align-center'>
+					<div class='modal-dialog modal-lg'>
+						<div class='modal-content'>
+							<div class='modal-no-header'>
+								<button type='button' class='close' data-dismiss='modal'>
+									<i class='fas fa-times'></i>
+								</button>
+								<h4 class='modal-title'>Error en descarga</h4>
+							</div>
+							<div class='modal-body text-center'>
+								<br><br>
+								El reporte no ha podido ser descargad, por favor verifique si se encuentra disponible en el listado
+								de reportes disponibles, en caso contrario, intente generarlo nuevamente
+								<br><br>
+							</div>
+							<div class='modal-footer'>
+								<button type='button' class='btn btn-red' data-dismiss='modal'>Cerrar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='modal fade' id='custom_error_modal'>
+			<div class='vertical-alignment-helper'>
+				<div class='vertical-align-center'>
+					<div class='modal-dialog modal-lg'>
+						<div class='modal-content'>
+							<div class='modal-no-header'>
+								<button type='button' class='close' data-dismiss='modal'>
+									<i class='fas fa-times'></i>
+								</button>
+								<h4 class='modal-title'>Error en descarga</h4>
+							</div>
+							<div class='modal-body text-center'>
+								<br><br>
+								<div id='custom_error'></div>
+								<br><br>
+							</div>
+							<div class='modal-footer'>
+								<button type='button' class='btn btn-red' data-dismiss='modal'>Cerrar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='modal fade' id='custom_seleccion_modal'>
+			<div class='vertical-alignment-helper'>
+				<div class='vertical-align-center'>
+					<div class='modal-dialog modal-lg'>
+						<div class='modal-content'>
+							<div class='modal-no-header'>
+								<button type='button' class='close' data-dismiss='modal'>
+									<i class='fas fa-times'></i>
+								</button>
+								<h4 class='modal-title'>Seleccione un tipo de encuesta para continuar</h4>
+							</div>
+							
+							<div class='modal-footer'>
+								<button type='button' class='btn btn-red' data-dismiss='modal'>Cerrar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
